@@ -1,7 +1,7 @@
 {
   "name": "auto-selection-backend",
   "version": "0.1.0",
-  "description": "Auto选品后端服务",
+  "description": "Auto选品后端服务 - AI跨境新手加速器",
   "private": true,
   "scripts": {
     "build": "nest build",
@@ -27,14 +27,17 @@
     "@nestjs/platform-express": "^10.3.0",
     "@nestjs/throttler": "^5.1.0",
     "@prisma/client": "^5.8.1",
+    "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "helmet": "^7.1.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "qrcode": "^1.5.3",
     "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.1",
+    "uuid": "^9.0.0",
     "validator": "^13.11.0"
   },
   "devDependencies": {
@@ -44,6 +47,8 @@
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.5",
     "@types/passport-jwt": "^4.0.1",
+    "@types/qrcode": "^1.5.5",
+    "@types/uuid": "^9.0.7",
     "@types/validator": "^13.11.7",
     "prisma": "^5.8.1",
     "tsx": "^4.7.0",

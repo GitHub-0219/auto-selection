@@ -7,37 +7,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 前端应该使用 mock 数据，无需数据库
-// 如需使用真实数据库，请配置 DATABASE_URL 并运行:
-// npm run db:setup
+// ==================== 用户与认证 ====================
 
-// 用户表
 model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
   password  String
   role      UserRole @default(free)
+  avatar    String?
+  phone     String?  @unique
+  status    UserStatus @default(active)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // 关联
-  products    Product[]
-  orders      Order[]
-  membership  Membership?
-  aiUsage     AIUsage[]
+  products       Product[]
+  orders         Order[]
+  membership     Membership?
+  aiUsage        AIUsage[]
+  payments       Payment[]
+  invitesSent    InviteCode[] @relation("Inviter")
+  invitesReceived InviteCode[] @relation("Invitee")
+  inviteRewards  InviteReward[]
+  points         PointTransaction[]
+  subscriptions  Subscription[]
 
   @@map("users")
 }
 
 enum UserRole {
-  free
-  basic
-  pro
-  enterprise
+  free      // 免费用户
+  basic     // 基础会员
+  pro       // 专业会员
+  enterprise // 企业会员
 }
 
-// 会员表
+enum UserStatus {
+  active    // 正常
+  frozen    // 冻结
+  banned    // 封禁
+}
+
+// ==================== 会员订阅 ====================
+
 model Membership {
   id        String   @id @default(uuid())
   userId    String   @unique
@@ -49,7 +62,6 @@ model Membership {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // 关联
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("memberships")
@@ -61,7 +73,219 @@ enum MembershipStatus {
   cancelled
 }
 
-// 商品表
+// 订阅方案表
+model SubscriptionPlan {
+  id          String         @id @default(uuid())
+  planId      String         @unique  // basic, pro, enterprise
+  name        String         // 方案名称
+  description String?        // 描述
+  price       Decimal        @db.Decimal(10, 2)  // 价格
+  currency    String         @default("CNY")
+  period      SubscriptionPeriod
+  periodDays  Int            // 周期天数
+  features    Json           // 功能列表
+  sortOrder   Int            @default(0)
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+enum SubscriptionPeriod {
+  weekly   // 周付
+  monthly  // 月付
+  quarterly // 季付
+  yearly   // 年付
+}
+
+// 用户订阅记录
+model Subscription {
+  id            String   @id @default(uuid())
+  userId        String
+  planId        String
+  status        SubscriptionStatus @default(active)
+  startDate     DateTime @default(now())
+  endDate       DateTime
+  autoRenew     Boolean  @default(true)
+  cancelledAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  active
+  expired
+  cancelled
+  pending  // 待支付
+}
+
+// ==================== 支付系统 ====================
+
+model Payment {
+  id            String        @id @default(uuid())
+  paymentId     String        @unique  // 支付平台订单号
+  userId        String
+  orderId       String?       // 关联订单
+  type          PaymentType
+  provider      PaymentProvider
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("CNY")
+  status        PaymentStatus @default(pending)
+  channel       String?       // 支付渠道（微信-公众号/小程序, 支付宝-APP/网页）
+  
+  // 支付信息
+  qrCode        String?       // 二维码URL
+  paymentUrl    String?       // 支付链接
+  prePayId      String?       // 预支付ID
+  
+  // 回调信息
+  paidAt        DateTime?     // 支付时间
+  rawResponse   Json?         // 原始响应
+  
+  // 退款相关
+  refundedAmount Decimal?     @db.Decimal(10, 2)  // 已退款金额
+  refundedAt     DateTime?
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("payments")
+}
+
+enum PaymentType {
+  subscription  // 订阅
+  product       // 商品
+  points        // 积分购买
+}
+
+enum PaymentProvider {
+  wechat       // 微信支付
+  alipay       // 支付宝
+}
+
+enum PaymentStatus {
+  pending      // 待支付
+  paid         // 已支付
+  cancelled    // 已取消
+  refunded     // 已退款
+  failed       // 失败
+}
+
+// ==================== 邀请系统 ====================
+
+model InviteCode {
+  id          String   @id @default(uuid())
+  inviterId   String
+  inviteeId   String?  // 被邀请人ID
+  code        String   @unique  // 邀请码
+  rewardAmount Decimal @db.Decimal(10, 2) @default(10)  // 邀请奖励金额
+  status      InviteStatus @default(unused)
+  usedAt      DateTime?
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  
+  inviter   User @relation("Inviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  invitee   User? @relation("Invitee", fields: [inviteeId], references: [id], onDelete: SetNull)
+
+  @@index([code])
+  @@index([inviterId])
+  @@map("invite_codes")
+}
+
+enum InviteStatus {
+  unused   // 未使用
+  used     // 已使用
+  expired  // 已过期
+}
+
+// 邀请奖励记录
+model InviteReward {
+  id            String   @id @default(uuid())
+  userId        String
+  inviteCodeId  String
+  type          RewardType
+  amount        Decimal  @db.Decimal(10, 2)
+  status        RewardStatus @default(pending)
+  createdAt     DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("invite_rewards")
+}
+
+enum RewardType {
+  cash     // 现金返现
+  points   // 积分奖励
+  discount // 折扣券
+}
+
+enum RewardStatus {
+  pending   // 待生效
+  available // 可用
+  used      // 已使用
+  expired   // 已过期
+}
+
+// ==================== 积分系统 ====================
+
+model PointTransaction {
+  id          String          @id @default(uuid())
+  userId      String
+  type        PointType
+  amount      Int             // 正数增加，负数减少
+  balance     Int             // 变动后余额
+  source      String?         // 来源
+  orderId     String?         // 关联订单
+  description String?
+  createdAt   DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("point_transactions")
+}
+
+enum PointType {
+  purchase     // 购买获得
+  consumption  // 消费使用
+  reward       // 奖励
+  refund       // 退款返还
+  invite       // 邀请奖励
+  expiry       // 过期扣除
+}
+
+// 积分规则配置
+model PointRule {
+  id          String   @id @default(uuid())
+  ruleKey     String   @unique
+  ruleName    String
+  pointValue  Int
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("point_rules")
+}
+
+// ==================== 商品与订单 ====================
+
 model Product {
   id          String        @id @default(uuid())
   userId      String
@@ -75,7 +299,6 @@ model Product {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  // 关联
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
 
@@ -89,18 +312,16 @@ enum ProductStatus {
   draft
 }
 
-// 订单表
 model Order {
   id          String      @id @default(uuid())
   orderNumber String      @unique
   userId      String
   status      OrderStatus @default(pending)
   totalAmount Decimal     @db.Decimal(10, 2)
-  currency    String      @default("USD")
+  currency    String      @default("CNY")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  // 关联
   user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items OrderItem[]
 
@@ -116,7 +337,6 @@ enum OrderStatus {
   cancelled
 }
 
-// 订单项表
 model OrderItem {
   id          String  @id @default(uuid())
   orderId     String
@@ -125,44 +345,46 @@ model OrderItem {
   quantity    Int
   price       Decimal @db.Decimal(10, 2)
 
-  // 关联
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
 }
 
-// AI使用记录表
+// ==================== AI服务 ====================
+
 model AIUsage {
   id        String   @id @default(uuid())
   userId    String
-  type      String   // analyze, translate, chat, etc.
+  type      String   // analyze, translate, video_script, selection_report
   input     String
   output    String?
   tokens    Int      @default(0)
   cost      Decimal  @default(0) @db.Decimal(10, 2)
+  model     String?  // 使用的模型
   createdAt DateTime @default(now())
 
-  // 关联
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([type])
   @@map("ai_usage")
 }
 
-// 审计日志表
+// ==================== 审计日志 ====================
+
 model AuditLog {
   id          String      @id @default(uuid())
   userId      String?
   userRole    String?
-  action      String      // LOGIN, LOGOUT, PASSWORD_CHANGE, PERMISSION_CHANGE, etc.
+  action      String      // LOGIN, LOGOUT, PASSWORD_CHANGE, PAYMENT, etc.
   resource    String?     // 资源类型
   resourceId  String?     // 资源ID
   ip          String?
   userAgent   String?
   requestId   String?
-  beforeValue String?     // JSON字符串
-  afterValue  String?     // JSON字符串
+  beforeValue String?     
+  afterValue  String?     
   status      AuditStatus @default(success)
   reason      String?
   createdAt   DateTime    @default(now())

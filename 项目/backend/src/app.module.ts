@@ -4,11 +4,17 @@ import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
+
+// Modules
 import { UserModule } from './modules/user/user.module'
 import { ProductModule } from './modules/product/product.module'
 import { OrderModule } from './modules/order/order.module'
 import { AIModule } from './modules/ai/ai.module'
 import { CaptchaModule } from './modules/captcha/captcha.module'
+import { PaymentModule } from './modules/payment/payment.module'
+import { InviteModule } from './modules/invite/invite.module'
+import { PointsModule } from './modules/points/points.module'
+
 import { PrismaModule } from './common/prisma/prisma.module'
 import { AppController } from './app.controller'
 
@@ -18,11 +24,13 @@ import { AppController } from './app.controller'
       isGlobal: true,
       envFilePath: '.env',
     }),
+    
     // 限流保护配置
     ThrottlerModule.forRoot([{
       ttl: 60000,  // 1分钟窗口
       limit: 100,   // 默认100次请求
     }]),
+    
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       global: true,
@@ -38,11 +46,17 @@ import { AppController } from './app.controller'
       },
       inject: [ConfigService],
     }),
+    
+    // 注册所有模块
     PrismaModule,
     UserModule,
     ProductModule,
     OrderModule,
     AIModule,
+    CaptchaModule,
+    PaymentModule,
+    InviteModule,
+    PointsModule,
   ],
   controllers: [AppController],
   providers: [
