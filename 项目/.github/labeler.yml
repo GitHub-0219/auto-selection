@@ -1,0 +1,57 @@
+# ============================================
+# GitHub Labeler 配置
+# ============================================
+
+# 功能相关
+feature:
+  - head-branch: ['^feat/', '^feature/']
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/**'
+          - 'app/**'
+
+# Bug 修复
+bug:
+  - head-branch: ['^fix/', '^hotfix/']
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.bugfix'
+          - '**/fix/**'
+
+# 文档更新
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+          - 'docs/**'
+          - 'README/**'
+
+# CI/CD 相关
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - 'docker-compose*.yml'
+          - 'Dockerfile*'
+
+# 前端相关
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'frontend/**'
+          - 'app/**'
+
+# 后端相关
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'backend/**'
+          - 'src/**'
+
+# 安全相关
+security:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/security*'
+          - '**/*auth*'
+          - '**/guard*'

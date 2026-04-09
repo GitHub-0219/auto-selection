@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 前端应该使用 mock 数据，无需数据库
+// 如需使用真实数据库，请配置 DATABASE_URL 并运行:
+// npm run db:setup
+
+// 用户表
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(free)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  products    Product[]
+  orders      Order[]
+  membership  Membership?
+  aiUsage     AIUsage[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  free
+  basic
+  pro
+  enterprise
+}
+
+// 会员表
+model Membership {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  plan      UserRole
+  status    MembershipStatus @default(active)
+  startDate DateTime @default(now())
+  endDate   DateTime
+  features  String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("memberships")
+}
+
+enum MembershipStatus {
+  active
+  expired
+  cancelled
+}
+
+// 商品表
+model Product {
+  id          String        @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  price       Decimal       @db.Decimal(10, 2)
+  currency    String        @default("USD")
+  category    String?
+  images      String[]      @default([])
+  status      ProductStatus @default(draft)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // 关联
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@index([userId])
+  @@map("products")
+}
+
+enum ProductStatus {
+  active
+  inactive
+  draft
+}
+
+// 订单表
+model Order {
+  id          String      @id @default(uuid())
+  orderNumber String      @unique
+  userId      String
+  status      OrderStatus @default(pending)
+  totalAmount Decimal     @db.Decimal(10, 2)
+  currency    String      @default("USD")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // 关联
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items OrderItem[]
+
+  @@index([userId])
+  @@map("orders")
+}
+
+enum OrderStatus {
+  pending
+  paid
+  shipped
+  delivered
+  cancelled
+}
+
+// 订单项表
+model OrderItem {
+  id          String  @id @default(uuid())
+  orderId     String
+  productId   String
+  productName String
+  quantity    Int
+  price       Decimal @db.Decimal(10, 2)
+
+  // 关联
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+// AI使用记录表
+model AIUsage {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // analyze, translate, chat, etc.
+  input     String
+  output    String?
+  tokens    Int      @default(0)
+  cost      Decimal  @default(0) @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  // 关联
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("ai_usage")
+}
+
+// 审计日志表
+model AuditLog {
+  id          String      @id @default(uuid())
+  userId      String?
+  userRole    String?
+  action      String      // LOGIN, LOGOUT, PASSWORD_CHANGE, PERMISSION_CHANGE, etc.
+  resource    String?     // 资源类型
+  resourceId  String?     // 资源ID
+  ip          String?
+  userAgent   String?
+  requestId   String?
+  beforeValue String?     // JSON字符串
+  afterValue  String?     // JSON字符串
+  status      AuditStatus @default(success)
+  reason      String?
+  createdAt   DateTime    @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([resource])
+  @@map("audit_logs")
+}
+
+enum AuditStatus {
+  success
+  failed
+}

@@ -1,0 +1,26 @@
+name: Dependency Review
+
+on: [pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Review Dependencies
+        uses: actions/dependency-review-action@v4
+        with:
+          # 允许以下许可证
+          allowed-licenses:
+            - MIT
+            - Apache-2.0
+            - BSD-2-Clause
+            - BSD-3-Clause
+            - ISC
+            - Unlicense
+            - CC0-1.0

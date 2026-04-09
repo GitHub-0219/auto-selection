@@ -1,0 +1,23 @@
+{
+  "name": "ai-cross-border-tests",
+  "version": "1.0.0",
+  "description": "AI跨境新手加速器 - 测试套件",
+  "scripts": {
+    "test": "node test-api.js",
+    "test:security": "node security-test.js",
+    "test:performance": "node performance-test.js",
+    "test:all": "npm run test && npm run test:security && npm run test:performance"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "test",
+    "api",
+    "security",
+    "performance"
+  ]
+}

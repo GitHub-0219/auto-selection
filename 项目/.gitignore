@@ -1,0 +1,102 @@
+# ============================================
+# AI跨境新手加速器 - .gitignore
+# ============================================
+
+# ============ Dependencies ============
+node_modules/
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# ============ Build Outputs ============
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# ============ Environment Files ============
+# 敏感文件 - 绝对不能提交
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# 示例配置可以提交（无敏感信息）
+# .env.example
+
+# ============ Testing ============
+coverage/
+.nyc_output/
+*.lcov
+
+# ============ Logs ============
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ============ Database ============
+prisma/migrations/
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# ============ IDE ============
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============ OS ============
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ============ Cache ============
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+
+# ============ Deployment ============
+.vercel
+.netlify
+.serverless/
+
+# ============ Secrets & Credentials ============
+*.pem
+*.key
+*.crt
+*.pfx
+credentials.json
+service-account.json
+
+# ============ Temporary Files ============
+tmp/
+temp/
+*.tmp
+*.temp
+
+# ============ Compiled Files ============
+*.com
+*.dll
+*.exe
+*.o
+*.so
+*.dylib

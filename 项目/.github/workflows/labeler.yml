@@ -1,0 +1,26 @@
+name: Auto Labeler
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  label-pr:
+    name: Label Pull Request
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Label PR based on changed files
+        uses: actions/labeler@v5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          sync-labels: true
+
+# 需要在仓库根目录创建 .github/labeler.yml 配置文件
+# 详情请参考: https://github.com/actions/labeler
