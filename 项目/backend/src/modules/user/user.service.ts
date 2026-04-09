@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PrismaService } from '../../common/prisma/prisma.service'
 import { ConfigService } from '@nestjs/config'
+import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 
 @Injectable()
@@ -12,6 +13,7 @@ export class UserService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private jwtService: JwtService,
   ) {}
 
   async findById(id: string) {
@@ -157,6 +159,65 @@ export class UserService {
   async unlockAccount(email: string): Promise<void> {
     this.lockoutCache.delete(email)
     this.loginAttemptsCache.delete(email)
+  }
+
+  // ==================== [BUG-004 FIX] Token刷新功能 ====================
+
+  /**
+   * 生成访问令牌和刷新令牌
+   */
+  async generateTokens(userId: string, email: string): Promise<{
+    accessToken: string
+    refreshToken: string
+    expiresIn: number
+  }> {
+    const accessToken = this.jwtService.sign(
+      { sub: userId, email, type: 'access' },
+      { expiresIn: '2h' },
+    )
+
+    const refreshToken = this.jwtService.sign(
+      { sub: userId, email, type: 'refresh' },
+      { expiresIn: '7d' },
+    )
+
+    return {
+      accessToken,
+      refreshToken,
+      expiresIn: 7200, // 2小时
+    }
+  }
+
+  /**
+   * 通过刷新令牌获取新的访问令牌
+   */
+  async refreshAccessToken(refreshToken: string): Promise<{
+    accessToken: string
+    expiresIn: number
+  }> {
+    try {
+      // 验证刷新令牌
+      const payload = this.jwtService.verify(refreshToken)
+
+      if (payload.type !== 'refresh') {
+        throw new Error('无效的刷新令牌类型')
+      }
+
+      const user = await this.findByEmail(payload.email)
+      if (!user) {
+        throw new Error('用户不存在')
+      }
+
+      // 生成新的访问令牌
+      const accessToken = this.jwtService.sign(
+        { sub: user.id, email: user.email, type: 'access' },
+        { expiresIn: '2h' },
+      )
+
+      return { accessToken, expiresIn: 7200 }
+    } catch (error) {
+      throw new Error('刷新令牌已过期或无效，请重新登录')
+    }
   }
 
   // ==================== 计划功能 ====================

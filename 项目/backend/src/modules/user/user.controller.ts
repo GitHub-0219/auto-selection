@@ -42,6 +42,11 @@ export class LoginDto {
   password: string
 }
 
+export class RefreshTokenDto {
+  @IsString()
+  refreshToken: string
+}
+
 @Controller('auth')
 export class UserController {
   private readonly maxLoginAttempts: number
@@ -77,9 +82,8 @@ export class UserController {
 
     const user = await this.userService.create(dto)
     
-    // 生成Token
-    const payload = { sub: user.id, email: user.email }
-    const token = this.jwtService.sign(payload)
+    // [BUG-004 FIX] 生成双Token
+    const tokens = await this.userService.generateTokens(user.id, user.email)
 
     return {
       success: true,
@@ -91,7 +95,9 @@ export class UserController {
           email: user.email,
           role: user.role,
         },
-        accessToken: token,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresIn: tokens.expiresIn,
       },
     }
   }
@@ -142,9 +148,8 @@ export class UserController {
     // 登录成功，清除失败记录
     await this.userService.clearLoginFailures(dto.email)
 
-    // 生成Token
-    const payload = { sub: user.id, email: user.email }
-    const token = this.jwtService.sign(payload)
+    // [BUG-004 FIX] 生成双Token
+    const tokens = await this.userService.generateTokens(user.id, user.email)
 
     return {
       success: true,
@@ -156,8 +161,31 @@ export class UserController {
           email: user.email,
           role: user.role,
         },
-        accessToken: token,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresIn: tokens.expiresIn,
       },
+    }
+  }
+
+  // [BUG-004 FIX] 添加Token刷新接口
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Body() dto: RefreshTokenDto) {
+    try {
+      const result = await this.userService.refreshAccessToken(dto.refreshToken)
+      return {
+        success: true,
+        data: {
+          accessToken: result.accessToken,
+          expiresIn: result.expiresIn,
+        },
+      }
+    } catch (error) {
+      throw new HttpException(
+        error.message || '刷新令牌已过期，请重新登录',
+        HttpStatus.UNAUTHORIZED,
+      )
     }
   }
 
