@@ -1,73 +1,87 @@
 @echo off
 chcp 65001 >nul
-color 0B
+title Auto选品 - 本地Demo启动
 
-echo.
-echo ╔═══════════════════════════════════════════════════════════╗
-echo ║                                                           ║
-echo ║     🚀 AI跨境新手加速器 - 本地演示Demo启动器              ║
-echo ║                                                           ║
-echo ╚═══════════════════════════════════════════════════════════╝
+echo ========================================
+echo    Auto选品 - 本地Demo一键启动
+echo ========================================
 echo.
 
 :: 检查Node.js
-where node >nul 2>&1
+where node >nul 2>nul
 if %errorlevel% neq 0 (
-    echo ❌ 错误: 未安装Node.js
-    echo 请先安装Node.js: https://nodejs.org/
+    echo ❌ 错误：未安装 Node.js
+    echo    请访问 https://nodejs.org 下载安装
     pause
     exit /b 1
 )
 
-for /f "delims=" %%i in ('node -v') do set NODE_VERSION=%%i
-echo ✓ Node.js %NODE_VERSION% 检测正常
-
-:: 获取当前目录
-set PROJECT_ROOT=%~dp0..\..
-set PROJECT_ROOT=%PROJECT_ROOT:~0,-1%
-
-echo.
-echo 📁 项目目录: %PROJECT_ROOT%
+for /f "tokens=*" %%i in ('node -v') do set NODE_VERSION=%%i
+echo ✅ Node.js 版本：%NODE_VERSION%
 echo.
 
-:: 安装后端依赖
-echo 📦 安装后端依赖...
-cd /d "%PROJECT_ROOT%\项目\backend"
+:: 切换到脚本所在目录
+cd /d "%~dp0"
+
+:: 检查后端依赖
+echo 📦 检查后端依赖...
+cd backend
 if not exist "node_modules" (
+    echo    安装后端依赖中...
     call npm install
+    if %errorlevel% neq 0 (
+        echo ❌ 后端依赖安装失败
+        pause
+        exit /b 1
+    )
 )
-echo ✓ 后端依赖安装完成
-
-:: 安装前端依赖
+echo ✅ 后端依赖已就绪
 echo.
-echo 📦 安装前端依赖...
-cd /d "%PROJECT_ROOT%\项目\frontend"
+
+:: 检查前端依赖
+echo 📦 检查前端依赖...
+cd ..\frontend
 if not exist "node_modules" (
+    echo    安装前端依赖中...
     call npm install
+    if %errorlevel% neq 0 (
+        echo ❌ 前端依赖安装失败
+        pause
+        exit /b 1
+    )
 )
-echo ✓ 前端依赖安装完成
+echo ✅ 前端依赖已就绪
+echo.
 
-:: 返回项目目录
-cd /d "%PROJECT_ROOT%"
+:: 启动后端
+echo 🚀 启动后端服务...
+cd ..\backend
+start "Auto选品-后端" cmd /k "npm run mock"
+timeout /t 3 >nul
+echo ✅ 后端已启动：http://localhost:3001
+echo.
+
+:: 启动前端
+echo 🚀 启动前端服务...
+cd ..\frontend
+start "Auto选品-前端" cmd /k "npm run dev"
+timeout /t 5 >nul
 
 echo.
-echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo ========================================
+echo    ✅ 启动完成！
+echo ========================================
 echo.
-echo ✅ 安装完成！请按以下步骤启动：
+echo 📍 访问地址：
+echo    前端：http://localhost:3000
+echo    后端：http://localhost:3001/api
 echo.
-echo 步骤1: 启动后端Mock API服务器
-echo       cd 项目\backend ^&^& npm run mock
+echo 🔐 演示账号：
+echo    邮箱：任意有效邮箱
+echo    密码：demo123
 echo.
-echo 步骤2: 另开终端，启动前端开发服务器
-echo       cd 项目\frontend ^&^& npm run dev
+echo 💡 提示：
+echo    - 关闭命令行窗口即可停止服务
+echo    - 查看 README.md 了解更多
 echo.
-echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo.
-echo 🌐 访问地址：
-echo       前端: http://localhost:3000
-echo       后端: http://localhost:3001
-echo.
-echo 💡 演示账号: 任意邮箱 + 密码 'demo123'
-echo.
-echo ✅ 准备就绪！
 pause
