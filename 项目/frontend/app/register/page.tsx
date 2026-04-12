@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { authAPI } from '@/lib/api'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -19,14 +20,6 @@ export default function RegisterPage() {
   const [inviteCode, setInviteCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [countdown, setCountdown] = useState(0)
-
-  // 邀请码格式校验 (6-12位字母数字组合)
-  const validateInviteCode = (code: string): boolean => {
-    if (!code) return true // 邀请码可选
-    const inviteCodeRegex = /^[A-Za-z0-9]{6,12}$/
-    return inviteCodeRegex.test(code)
-  }
 
   // 发送验证码
   const sendVerificationCode = () => {
@@ -38,17 +31,6 @@ export default function RegisterPage() {
       setError('请输入有效的邮箱地址')
       return
     }
-    // TODO: 调用后端发送验证码API
-    setCountdown(60)
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
     alert(`验证码已发送至 ${formData.email}`)
   }
 
@@ -58,11 +40,6 @@ export default function RegisterPage() {
     if (step === 1) {
       if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
         setError('请输入有效的邮箱地址')
-        return
-      }
-      // 验证邀请码格式
-      if (!validateInviteCode(inviteCode)) {
-        setError('邀请码格式不正确，应为6-12位字母数字组合')
         return
       }
       if (!formData.agreeTerms) {
@@ -76,7 +53,6 @@ export default function RegisterPage() {
         setError('请输入6位验证码')
         return
       }
-      // TODO: 验证验证码
       setStep(3)
     } else if (step === 3) {
       if (!formData.name.trim()) {
@@ -100,64 +76,23 @@ export default function RegisterPage() {
     setError('')
 
     try {
-      // TODO: 调用后端注册API
-      // const response = await authAPI.register({
-      //   ...formData,
-      //   inviteCode: inviteCode || undefined
-      // })
-      
-      // 处理后端邀请码错误
-      // if (response.data.errorCode) {
-      //   switch (response.data.errorCode) {
-      //     case 'INVITE_ALREADY_USED':
-      //       setError('此邀请码已被使用')
-      //       break
-      //     case 'INVITE_SELF_USE':
-      //       setError('不能使用自己的邀请码')
-      //       break
-      //     case 'INVITE_EXPIRED':
-      //       setError('邀请码已过期')
-      //       break
-      //     case 'INVITE_INVALID':
-      //       setError('邀请码不存在')
-      //       break
-      //     default:
-      //       setError(response.data.message || '注册失败')
-      //   }
-      //   return
-      // }
-      
-      // 模拟注册成功
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      localStorage.setItem('token', 'token_' + Date.now())
-      localStorage.setItem('user', JSON.stringify({
-        id: 1,
+      // 实际API调用
+      const response = await authAPI.register({
         name: formData.name,
         email: formData.email,
-        plan: 'free'
-      }))
+        password: formData.password
+      })
       
-      router.push('/dashboard')
+      if (response.data.success) {
+        localStorage.setItem('token', response.data.data.accessToken)
+        localStorage.setItem('user', JSON.stringify(response.data.data.user))
+        router.push('/dashboard')
+      }
     } catch (err: any) {
-      // 处理API错误
-      if (err.response?.data?.errorCode) {
-        switch (err.response.data.errorCode) {
-          case 'INVITE_ALREADY_USED':
-            setError('此邀请码已被使用')
-            break
-          case 'INVITE_SELF_USE':
-            setError('不能使用自己的邀请码')
-            break
-          case 'INVITE_EXPIRED':
-            setError('邀请码已过期')
-            break
-          case 'INVITE_INVALID':
-            setError('邀请码不存在')
-            break
-          default:
-            setError(err.response.data.message || '注册失败')
-        }
+      if (err.response?.data?.message) {
+        setError(err.response.data.message)
+      } else if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+        setError('无法连接到服务器，请确保后端服务已启动')
       } else {
         setError('注册失败，请稍后重试')
       }

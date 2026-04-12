@@ -84,8 +84,22 @@ Desktop.ini
 *.key
 *.crt
 *.pfx
+*.jks
+*.p12
+*.ovpn
 credentials.json
 service-account.json
+secrets.yaml
+secrets.yml
+vault.json
+
+# 密钥文件
+.env.secrets
+.env密钥*
+*secret*.txt
+*secret*.sh
+*-secrets.sh
+
 
 # ============ Temporary Files ============
 tmp/

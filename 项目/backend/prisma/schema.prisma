@@ -1,11 +1,28 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlConnectionLimit"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// ===========================================
+// 安全配置说明
+// ===========================================
+// 生产环境 DATABASE_URL 必须包含 sslmode 参数
+// 
+// AWS RDS 示例:
+// postgresql://user:pass@xxx.rds.amazonaws.com:5432/db?sslmode=require&sslrootcert=./rds-bundle.pem
+//
+// 自签名证书示例:
+// postgresql://user:pass@host:5432/db?sslmode=require&sslcert=./server.crt&sslkey=./server.key
+//
+// 环境变量配置:
+// DB_SSL_MODE=require (生产环境必须)
+// DB_SSL_REJECT_UNAUTHORIZED=true (生产环境必须)
+
 
 // ==================== 用户与认证 ====================
 

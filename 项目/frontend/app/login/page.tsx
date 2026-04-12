@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { authAPI } from '@/lib/api'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -12,36 +13,6 @@ export default function LoginPage() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [verificationCode, setVerificationCode] = useState('')
-  const [showCodeInput, setShowCodeInput] = useState(false)
-  const [countdown, setCountdown] = useState(0)
-
-  // 生成验证码
-  const generateCode = () => {
-    const code = Math.random().toString(36).substring(2, 6).toUpperCase()
-    setVerificationCode(code)
-    return code
-  }
-
-  // 发送验证码
-  const sendCode = () => {
-    if (!formData.email) {
-      setError('请输入邮箱地址')
-      return
-    }
-    // TODO: 调用后端发送验证码API
-    setCountdown(60)
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-    alert(`验证码已发送至 ${formData.email}`)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,7 +20,7 @@ export default function LoginPage() {
     setError('')
 
     try {
-      // 演示模式：直接跳转
+      // 演示模式：demo@example.com 或 demo 直接跳转
       if (formData.email === 'demo@example.com' || formData.email === 'demo') {
         localStorage.setItem('token', 'demo_token_' + Date.now())
         localStorage.setItem('user', JSON.stringify({
@@ -62,38 +33,25 @@ export default function LoginPage() {
         return
       }
 
-      // TODO: 实际API调用
-      // const response = await authAPI.login(formData)
-      // 
-      // 处理后端错误码
-      // if (response.data.errorCode === 'ACCOUNT_LOCKED') {
-      //   setError('登录尝试次数过多，请15分钟后重试')
-      //   return
-      // }
-      // if (response.data.errorCode === 'ACCOUNT_DISABLED') {
-      //   setError('账号已被禁用，请联系客服')
-      //   return
-      // }
-      // 
-      // if (response.data.success) { ... }
-
-      // 模拟登录成功
-      setTimeout(() => {
-        localStorage.setItem('token', 'token_' + Date.now())
-        localStorage.setItem('user', JSON.stringify({
-          id: 1,
-          name: formData.email.split('@')[0],
-          email: formData.email,
-          plan: 'free'
-        }))
+      // 实际API调用
+      const response = await authAPI.login({
+        email: formData.email,
+        password: formData.password
+      })
+      
+      if (response.data.success) {
+        localStorage.setItem('token', response.data.data.accessToken)
+        localStorage.setItem('user', JSON.stringify(response.data.data.user))
         router.push('/dashboard')
-      }, 1000)
+      }
     } catch (err: any) {
       // 处理429限流错误
       if (err.response?.status === 429 || err.response?.data?.errorCode === 'TOO_MANY_REQUESTS') {
         setError('登录尝试次数过多，请15分钟后重试')
       } else if (err.response?.data?.message) {
         setError(err.response.data.message)
+      } else if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+        setError('无法连接到服务器，请确保后端服务已启动')
       } else {
         setError('登录失败，请检查网络连接')
       }
