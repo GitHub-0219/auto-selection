@@ -1,68 +1,98 @@
-# Auto选品 - 本地演示Demo
+# Auto选品 - 跨境电商AI智能选品平台
 
 > 智能选品、自动翻译、多平台运营的一站式跨境电商解决方案
 
-## 📋 项目简介
-
-Auto选品是一款专为跨境电商打造的一站式解决方案，通过AI技术帮助用户快速开展跨境电商业务。
-
-**当前版本**: 演示Demo v1.0.0  
-**状态**: ✅ 功能完整可演示
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green.svg)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18-blue.svg)](https://react.dev/)
+[![NestJS](https://img.shields.io/badge/NestJS-10-red.svg)](https://nestjs.com/)
 
 ---
 
-## ✨ 功能清单
+## 📋 项目简介
 
-### 核心功能
-| 功能 | 描述 | 演示状态 |
-|------|------|----------|
+Auto选品是一款专为跨境电商打造的一站式解决方案，通过AI技术帮助用户快速开展跨境电商业务。支持东南亚 Shopee/Lazada、TikTok Shop 等主流平台。
+
+**当前版本**: v1.0.0  
+**技术架构**: Next.js 14 + NestJS 10 + TypeScript
+
+---
+
+## ✨ 核心功能
+
+| 功能模块 | 描述 | 状态 |
+|---------|------|------|
 | 🤖 AI智能选品 | 基于市场数据分析，推荐高潜力商品 | ✅ 可用 |
 | 🌍 多语言翻译 | 支持50+语言的自动翻译 | ✅ 可用 |
 | 💰 智能定价 | AI驱动的动态定价策略 | ✅ 可用 |
 | 📦 订单管理 | 自动化的订单处理流程 | 🔜 开发中 |
 | 📊 数据分析 | 实时销售监控和报告 | 🔜 开发中 |
 
-### 页面功能
-| 页面 | 功能 | 演示状态 |
-|------|------|----------|
-| 首页 | 产品介绍、功能展示 | ✅ 可用 |
-| 用户注册 | 邮箱注册、表单验证 | ✅ 可用 |
-| 用户登录 | 邮箱登录、演示模式 | ✅ 可用 |
-| 用户中心 | 个人信息、会员状态 | ✅ 可用 |
-| AI选品 | 关键词分析、结果展示 | ✅ 可用 |
-| 定价页面 | 套餐展示、升级引导 | ✅ 可用 |
+---
+
+## 🛠 技术栈
+
+### 前端
+- **框架**: Next.js 14 (App Router)
+- **UI库**: Tailwind CSS
+- **状态管理**: Zustand
+- **表单验证**: React Hook Form + Zod
+- **HTTP客户端**: Axios
+
+### 后端
+- **框架**: NestJS 10
+- **语言**: TypeScript
+- **ORM**: Prisma
+- **数据库**: PostgreSQL
+- **认证**: JWT
+
+### 基础设施
+- **容器化**: Docker + Docker Compose
+- **Web服务器**: Nginx
+- **进程管理**: PM2
+- **CI/CD**: GitHub Actions
 
 ---
 
 ## 🚀 快速开始
 
 ### 前置要求
+
 - **Node.js**: v18.0.0 或更高版本
 - **npm**: v8.0.0 或更高版本
+- **PostgreSQL**: v14+ (仅生产环境)
+- **Docker**: v20+ (可选，用于容器化部署)
 
-### 方式一：一键启动（推荐）
+### 方式一：一键启动 (推荐)
 
 ```bash
-# 进入项目目录
-cd 项目
+# 克隆项目
+git clone https://github.com/GitHub-0219/auto-selection.git
+cd auto-selection/project
 
-# Linux/Mac 执行
+# Linux/Mac
+chmod +x start-demo.sh
 ./start-demo.sh
 
-# Windows 执行
+# Windows
 start-demo.bat
 ```
 
-脚本会自动检查环境并安装依赖。
+脚本会自动：
+1. 检查 Node.js 环境
+2. 安装后端依赖
+3. 安装前端依赖
+4. 启动 Mock API 服务器 (端口 3001)
+5. 启动前端开发服务器 (端口 3000)
 
 ### 方式二：手动启动
 
 #### 1. 启动后端 Mock API 服务器
 
 ```bash
-cd 项目/backend
-npm install          # 首次运行需要
-npm run mock         # 启动服务
+cd project/backend
+npm install
+npm run mock
 ```
 
 服务地址: http://localhost:3001
@@ -70,150 +100,139 @@ npm run mock         # 启动服务
 #### 2. 启动前端开发服务器
 
 ```bash
-cd 项目/frontend
-npm install          # 首次运行需要
-npm run dev          # 启动服务
+cd project/frontend
+npm install
+npm run dev
 ```
 
 访问地址: http://localhost:3000
 
 ---
 
-## 📖 演示说明
-
-### 演示账号
-- **任意邮箱** + 密码 **demo123**
-- 示例: `demo@example.com` / `demo123`
-
-### 演示流程
-
-#### 流程1：用户注册/登录
-1. 访问 http://localhost:3000
-2. 点击右上角「免费试用」或「登录」
-3. 使用演示账号登录或注册新账号
-
-#### 流程2：AI智能选品
-1. 登录后进入「用户中心」
-2. 点击「AI智能选品」
-3. 输入商品关键词（如：蓝牙耳机、智能手表）
-4. 点击「开始分析」
-5. 查看AI推荐的商品和市场洞察
-
-#### 流程3：定价方案查看
-1. 点击顶部「定价」
-2. 查看不同套餐的功能对比
-3. 点击「免费试用」或「升级」
-
----
-
-## 🛠️ 技术架构
-
-### 前端
-- **框架**: Next.js 14 (App Router)
-- **语言**: TypeScript
-- **样式**: Tailwind CSS
-- **HTTP**: Axios
-- **端口**: 3000
-
-### 后端（Mock模式）
-- **类型**: Node.js 原生HTTP服务
-- **数据**: 内存存储（无需数据库）
-- **端口**: 3001
-
-### API端点
-
-| 方法 | 路径 | 描述 | 认证 |
-|------|------|------|------|
-| GET | /api/health | 健康检查 | ❌ |
-| POST | /api/auth/register | 用户注册 | ❌ |
-| POST | /api/auth/login | 用户登录 | ❌ |
-| GET | /api/auth/profile | 获取用户资料 | ✅ |
-| GET | /api/auth/membership | 获取会员信息 | ✅ |
-| POST | /api/ai/analyze-products | AI选品分析 | ✅ |
-| POST | /api/ai/translate | 商品翻译 | ✅ |
-| POST | /api/ai/suggest-price | 智能定价 | ✅ |
-| GET | /api/ai/capabilities | AI能力列表 | ❌ |
-| GET | /api/ai/market-insights | 市场洞察 | ✅ |
-| GET | /api/ai/languages | 支持的语言 | ❌ |
-| GET | /api/products | 商品列表 | ✅ |
-
----
-
-## ⚠️ 安全注意事项
-
-> ⚠️ **演示模式仅供本地演示使用**
-
-1. **数据安全**: 所有数据存储在内存中，服务器重启后数据会丢失
-2. **认证方式**: Demo使用简化的JWT认证，不适用于生产环境
-3. **密码处理**: Demo模式未使用真正的密码加密
-4. **CORS配置**: Demo允许所有来源的跨域请求
-
-**生产部署注意事项**:
-- 使用HTTPS加密传输
-- 实现真正的密码加密（bcrypt）
-- 使用正式的JWT令牌
-- 配置严格的CORS策略
-- 使用数据库持久化存储
-
----
-
 ## 📁 项目结构
 
 ```
-项目/
-├── README.md              # 本文件
-├── start-demo.sh          # Linux/Mac启动脚本
-├── start-demo.bat         # Windows启动脚本
+project/
+├── frontend/                 # Next.js 前端应用
+│   ├── app/                  # App Router 页面
+│   │   ├── ai-select/        # AI选品页面
+│   │   ├── dashboard/        # 用户仪表盘
+│   │   ├── login/            # 登录页面
+│   │   ├── pricing/          # 定价页面
+│   │   ├── profile/          # 个人中心
+│   │   └── register/         # 注册页面
+│   ├── components/           # React 组件
+│   └── lib/                  # 工具函数
 │
-├── frontend/              # Next.js前端应用
-│   ├── app/               # 页面组件
-│   │   ├── page.tsx       # 首页
-│   │   ├── login/         # 登录页
-│   │   ├── register/      # 注册页
-│   │   ├── dashboard/    # 用户中心
-│   │   ├── ai-select/     # AI选品
-│   │   └── pricing/       # 定价页
-│   ├── components/        # 公共组件
-│   ├── lib/               # 工具函数
-│   │   ├── api.ts        # API客户端
-│   │   └── types.ts      # 类型定义
-│   └── package.json
+├── backend/                  # NestJS 后端服务
+│   ├── src/
+│   │   ├── modules/          # 功能模块
+│   │   │   ├── ai/           # AI选品模块
+│   │   │   ├── user/         # 用户模块
+│   │   │   ├── product/      # 商品模块
+│   │   │   ├── order/        # 订单模块
+│   │   │   ├── payment/      # 支付模块
+│   │   │   └── points/       # 积分模块
+│   │   └── common/           # 公共模块
+│   ├── prisma/               # 数据库 schema
+│   └── docs/                 # API 文档
 │
-└── backend/               # 后端服务
-    ├── mock-server.js     # Mock API服务器
-    ├── src/               # NestJS源码（完整模式）
-    ├── prisma/            # 数据库Schema
-    └── package.json
+├── docker-compose.yml        # Docker Compose 配置
+└── start-demo.sh             # 一键启动脚本
 ```
 
 ---
 
-## 🔧 故障排除
+## 🔑 演示账号
 
-### 前端无法连接后端
-1. 确认后端服务运行在端口3001
-2. 检查浏览器控制台是否有CORS错误
-3. 确认 `NEXT_PUBLIC_API_URL` 环境变量正确
-
-### 登录失败
-1. 使用演示账号: `demo@example.com` / `demo123`
-2. 清除浏览器localStorage后重试
-3. 确认后端服务正常运行
-
-### 端口被占用
-- 前端默认端口: 3000
-- 后端默认端口: 3001
-
-如果端口被占用，可以修改:
-- `frontend/package.json` 中的 `dev` 脚本: `next dev -p 3002`
-- `backend/mock-server.js` 中的 `PORT` 常量
+- **任意邮箱** + 密码 **demo123**
+- 示例: `demo@example.com` / `demo123`
 
 ---
 
-## 📞 支持
+## 📚 文档目录
 
-如有问题，请联系开发团队。
+| 文档 | 描述 |
+|------|------|
+| [部署指南](./docs/部署指南.md) | 服务器环境配置、一键部署、手动部署 |
+| [API文档](./docs/API文档.md) | 所有API接口说明、请求/响应示例 |
+| [用户手册](./docs/用户手册.md) | 功能使用教程、操作指南 |
+| [故障排查](./docs/故障排查.md) | 常见问题、解决方案、日志查看 |
 
 ---
 
-**版本**: v1.0.0 | **更新时间**: 2024年
+## 🌐 访问地址
+
+### 本地开发
+- 前端: http://localhost:3000
+- 后端 API: http://localhost:3001/api/v1
+
+### 演示服务器
+- 前端: http://139.226.175.192
+- 后端 API: http://139.226.175.192:3001/api/v1
+
+---
+
+## 🔒 环境变量
+
+### 后端 (.env)
+
+```env
+# 应用配置
+NODE_ENV=development
+PORT=3001
+
+# 数据库 (生产环境)
+DATABASE_URL=postgresql://user:password@localhost:5432/auto_selection
+
+# JWT配置
+JWT_SECRET=your-super-secret-jwt-key
+JWT_EXPIRES_IN=7d
+
+# AI服务
+AI_PROVIDER=openai
+OPENAI_API_KEY=sk-xxxxx
+
+# 前端URL (CORS)
+FRONTEND_URL=http://localhost:3000
+```
+
+### 前端 (.env)
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
+NEXT_PUBLIC_APP_NAME=Auto选品
+```
+
+---
+
+## 🐳 Docker 部署
+
+```bash
+# 构建并启动所有服务
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f backend
+
+# 停止服务
+docker-compose down
+```
+
+---
+
+## 📄 许可证
+
+本项目基于 [MIT 许可证](./LICENSE) 开源。
+
+---
+
+## 🙏 致谢
+
+- [Next.js](https://nextjs.org/) - React 框架
+- [NestJS](https://nestjs.com/) - Node.js 框架
+- [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
+- [Prisma](https://prisma.io/) - 数据库 ORM

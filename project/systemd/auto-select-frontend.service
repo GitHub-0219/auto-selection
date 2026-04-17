@@ -1,0 +1,33 @@
+[Unit]
+Description=Auto选品 Frontend Service
+Documentation=https://github.com/your-org/auto-selection
+After=network.target auto-select-backend.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/auto-selection/frontend
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/opt/auto-selection/logs/frontend.log
+StandardError=append:/opt/auto-selection/logs/frontend.log
+
+# 环境变量
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOST=0.0.0.0
+
+# 安全限制
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/auto-selection/logs
+
+# 资源限制
+LimitNOFILE=65536
+MemoryMax=1G
+
+[Install]
+WantedBy=multi-user.target

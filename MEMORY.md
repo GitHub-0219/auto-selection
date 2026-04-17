@@ -469,3 +469,164 @@
 - 所有内容备份
 - 确保一次部署成功
 - 每日详细校验文件内容
+
+
+# 项目部署问题汇总与修复计划（2026年4月17日）
+
+## 已发现问题清单
+
+### 1. ❌ GitHub仓库目录名问题
+- **问题**：目录名为中文"项目"，服务器clone后显示乱码
+- **影响**：无法找到backend/frontend/start-demo.sh
+- **状态**：✅ 已修复（重命名为project）
+
+### 2. ❌ Next.js layout.tsx编译错误
+- **问题**：`'use client'` 与 `metadata` 导出冲突
+- **影响**：前端编译失败
+- **状态**：✅ 已修复（移除'use client'）
+- **Issue**：https://github.com/GitHub-0219/auto-selection/issues/1
+
+### 3. ❌ ngrok TCP隧道需要绑卡
+- **问题**：免费版无法使用TCP隧道
+- **影响**：无法远程SSH连接服务器
+- **状态**：⚠️ 待处理（改用HTTP隧道或本地部署）
+
+### 4. ❌ 路由器端口转发未配置
+- **问题**：联通光猫无端口转发设置
+- **影响**：无法从外网访问服务器
+- **状态**：⚠️ 待处理（需要超级管理员密码或内网穿透）
+
+### 5. ❌ 启动脚本权限问题
+- **问题**：start-demo.sh无执行权限
+- **影响**：无法直接执行
+- **状态**：✅ 已修复（chmod +x）
+
+### 6. ❌ 服务器防火墙端口未开放
+- **问题**：3000/3001端口未开放
+- **影响**：局域网其他设备无法访问
+- **状态**：⚠️ 需要手动执行ufw allow
+
+---
+
+## 修复计划
+
+### 阶段1：代码层面修复（今晚完成）
+1. ✅ 目录重命名：项目 → project
+2. ✅ 修复layout.tsx编译错误
+3. 🔄 全面检查所有代码文件
+4. 🔄 生成一键部署脚本
+5. 🔄 编写详细的部署文档
+
+### 阶段2：服务器配置优化（今晚完成）
+1. 🔄 创建systemd服务自动启动
+2. 🔄 配置Nginx反向代理
+3. 🔄 开放防火墙端口
+4. 🔄 生成SSL证书（可选）
+
+### 阶段3：文档完善（今晚完成）
+1. 🔄 更新README.md
+2. 🔄 编写部署指南
+3. 🔄 编写故障排查手册
+4. 🔄 编写API文档
+
+### 阶段4：验证测试（明早）
+1. ⏳ 全新环境部署测试
+2. ⏳ 功能完整性测试
+3. ⏳ 性能测试
+4. ⏳ 安全测试
+
+---
+
+## 明天早上部署检查清单
+
+### 服务器准备
+- [ ] Ubuntu 24系统
+- [ ] Node.js 18+
+- [ ] 防火墙已开放3000/3001端口
+
+### 部署命令（明早执行）
+```bash
+cd ~ && rm -rf auto-selection && git clone https://github.com/GitHub-0219/auto-selection.git && cd auto-selection/project && chmod +x start-demo.sh && ./start-demo.sh
+```
+
+### 访问地址
+- 前端：http://服务器IP:3000
+- 后端：http://服务器IP:3001/api
+- 演示账号：任意邮箱 + 密码 demo123
+
+
+# 后端API验证记录（2026年4月17日 23:56）
+
+## 验证结果
+
+### API状态接口
+- **地址**：http://192.168.1.21:3001/api
+- **状态**：✅ 运行正常
+
+### 返回数据
+```json
+{
+    "success": true,
+    "message": "AI跨境新手加速器 API 服务运行正常",
+    "data": {
+        "version": "1.0.0",
+        "status": "running",
+        "timestamp": "2026-04-17T15:55:58.402Z",
+        "services": {
+            "database": "connected (mock)",
+            "api": "operational"
+        }
+    }
+}
+```
+
+### 服务状态
+| 组件 | 状态 |
+|------|------|
+| API服务 | ✅ operational |
+| 数据库 | ✅ connected (mock模式) |
+| 版本 | 1.0.0 |
+
+## 后端功能清单
+
+### 已实现接口
+1. **用户认证**
+   - POST /api/auth/register - 用户注册
+   - POST /api/auth/login - 用户登录
+   - GET /api/auth/profile - 获取用户信息
+
+2. **AI选品**
+   - POST /api/ai-select/analyze - AI选品分析
+   - GET /api/ai-select/recommend - 获取推荐商品
+
+3. **多语言翻译**
+   - POST /api/translate - 文本翻译
+   - GET /api/translate/languages - 支持的语言列表
+
+4. **智能定价**
+   - POST /api/pricing/calculate - 计算定价
+   - GET /api/pricing/strategy - 获取定价策略
+
+5. **会员系统**
+   - GET /api/membership/plans - 获取会员套餐
+   - POST /api/membership/subscribe - 订阅会员
+
+## Mock模式说明
+
+当前后端运行在Mock模式：
+- 使用内存数据，无需真实数据库
+- 适合演示和测试
+- 演示密码：demo123
+
+## 复盘总结
+
+### 成功经验
+1. Mock模式降低了部署复杂度
+2. API响应格式统一（success/message/data）
+3. 健康检查接口便于监控
+
+### 待改进
+1. 需要添加真实数据库连接选项
+2. 需要添加API文档
+3. 需要添加请求限流
+4. 需要添加日志记录

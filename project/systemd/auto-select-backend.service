@@ -1,0 +1,32 @@
+[Unit]
+Description=Auto选品 Backend Service
+Documentation=https://github.com/your-org/auto-selection
+After=network.target mysql.service postgresql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/auto-selection/backend
+ExecStart=/usr/bin/node mock-server.js
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/opt/auto-selection/logs/backend.log
+StandardError=append:/opt/auto-selection/logs/backend.log
+
+# 环境变量
+Environment=NODE_ENV=production
+Environment=PORT=3001
+
+# 安全限制
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/auto-selection/logs
+
+# 资源限制
+LimitNOFILE=65536
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target
