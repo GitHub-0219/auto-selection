@@ -7,7 +7,7 @@ set -e
 # ==================== 配置区域 ====================
 GITHUB_REPO="https://github.com/GitHub-0219/auto-selection.git"
 PROJECT_DIR="/opt/auto-selection"
-SERVER_IP="139.226.175.192"
+SERVER_IP="${DEPLOY_SERVER_IP:-your-server-ip}"
 SERVER_USER="zzp_server"
 BACKEND_PORT="3001"
 FRONTEND_PORT="5173"
