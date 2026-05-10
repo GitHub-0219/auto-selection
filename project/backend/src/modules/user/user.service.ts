@@ -141,7 +141,6 @@ export class UserService {
     // 清除失败记录
     this.loginAttemptsCache.delete(email)
     
-    console.log(`[Security] Account locked: ${email}, unlock at: ${new Date(unlockTime).toISOString()}`)
   }
 
   /**
