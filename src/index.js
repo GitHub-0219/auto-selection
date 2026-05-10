@@ -52,8 +52,6 @@ app.use((err, req, res, next) => {
 
 // 启动服务器
 app.listen(PORT, () => {
-  console.log(`🚀 Auto选品服务器已启动: http://localhost:${PORT}`);
-  console.log(`📦 API文档: http://localhost:${PORT}/api/health`);
 });
 
 module.exports = app;
