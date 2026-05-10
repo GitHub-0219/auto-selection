@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto选品 - AI跨境新手加速器 | TikTok Shop东南亚市场</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="logo">🚀</span>
+      <h1>Auto选品</h1>
+      <span class="badge">AI跨境新手加速器</span>
+    </div>
+    <div class="nav-links">
+      <a href="#dashboard" class="nav-link active" data-section="dashboard">📊 数据看板</a>
+      <a href="#products" class="nav-link" data-section="products">📦 商品管理</a>
+      <a href="#ai-recommend" class="nav-link" data-section="ai-recommend">🤖 AI推荐</a>
+      <a href="#analysis" class="nav-link" data-section="analysis">📈 市场分析</a>
+    </div>
+    <div class="nav-user">
+      <span class="market-selector">
+        <select id="marketSelect">
+          <option value="all">🌏 全部市场</option>
+          <option value="TH">🇹🇭 泰国</option>
+          <option value="VN">🇻🇳 越南</option>
+          <option value="MY">🇲🇾 马来西亚</option>
+          <option value="PH">🇵🇭 菲律宾</option>
+          <option value="ID">🇮🇩 印尼</option>
+        </select>
+      </span>
+    </div>
+  </nav>
+
+  <!-- 主内容区域 -->
+  <main class="main-content">
+
+    <!-- ==================== 数据看板 ==================== -->
+    <section id="dashboard" class="section active">
+      <div class="section-header">
+        <h2>📊 数据看板</h2>
+        <p>实时监控 TikTok Shop 东南亚市场数据</p>
+      </div>
+
+      <!-- 核心指标卡片 -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-info">
+            <span class="stat-value" id="statTotalProducts">156</span>
+            <span class="stat-label">监控商品数</span>
+          </div>
+          <div class="stat-trend up">+12</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <span class="stat-value" id="statRecommended">42</span>
+            <span class="stat-label">AI推荐商品</span>
+          </div>
+          <div class="stat-trend up">+5</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-info">
+            <span class="stat-value" id="statAvgScore">76</span>
+            <span class="stat-label">平均评分</span>
+          </div>
+          <div class="stat-trend up">+2</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🌏</div>
+          <div class="stat-info">
+            <span class="stat-value" id="statMarkets">5</span>
+            <span class="stat-label">覆盖市场</span>
+          </div>
+          <div class="stat-trend neutral">全</div>
+        </div>
+      </div>
+
+      <!-- 市场概览表格 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🌏 市场概览</h3>
+        </div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>市场</th>
+                <th>商品数</th>
+                <th>平均评分</th>
+                <th>增长趋势</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody id="marketTableBody">
+              <!-- 动态填充 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 热门品类 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🔥 热门品类排行</h3>
+        </div>
+        <div class="card-body">
+          <div class="category-grid" id="categoryGrid">
+            <!-- 动态填充 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 商品管理 ==================== -->
+    <section id="products" class="section">
+      <div class="section-header">
+        <h2>📦 商品管理</h2>
+        <p>管理您的 TikTok Shop 商品库</p>
+      </div>
+
+      <!-- 筛选和操作栏 -->
+      <div class="toolbar">
+        <div class="filters">
+          <select id="filterCategory">
+            <option value="">全部品类</option>
+            <option value="美妆护肤">美妆护肤</option>
+            <option value="3C数码">3C数码</option>
+            <option value="时尚服饰">时尚服饰</option>
+            <option value="家居生活">家居生活</option>
+            <option value="运动户外">运动户外</option>
+            <option value="母婴用品">母婴用品</option>
+          </select>
+          <select id="filterMarket">
+            <option value="">全部市场</option>
+            <option value="TH">🇹🇭 泰国</option>
+            <option value="VN">🇻🇳 越南</option>
+            <option value="MY">🇲🇾 马来西亚</option>
+            <option value="PH">🇵🇭 菲律宾</option>
+            <option value="ID">🇮🇩 印尼</option>
+          </select>
+          <select id="filterStatus">
+            <option value="">全部状态</option>
+            <option value="recommended">已推荐</option>
+            <option value="watching">观察中</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="btnAddProduct">+ 添加商品</button>
+      </div>
+
+      <!-- 商品列表 -->
+      <div class="product-grid" id="productGrid">
+        <!-- 动态填充 -->
+      </div>
+    </section>
+
+    <!-- ==================== AI推荐 ==================== -->
+    <section id="ai-recommend" class="section">
+      <div class="section-header">
+        <h2>🤖 AI智能选品推荐</h2>
+        <p>输入关键词，AI为您推荐高潜力商品</p>
+      </div>
+
+      <!-- 推荐参数表单 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>📝 推荐参数</h3>
+        </div>
+        <div class="card-body">
+          <form id="recommendForm" class="recommend-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>品类偏好</label>
+                <select id="recCategory">
+                  <option value="">不限品类</option>
+                  <option value="美妆护肤">美妆护肤</option>
+                  <option value="3C数码">3C数码</option>
+                  <option value="时尚服饰">时尚服饰</option>
+                  <option value="家居生活">家居生活</option>
+                  <option value="运动户外">运动户外</option>
+                  <option value="母婴用品">母婴用品</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>目标市场</label>
+                <select id="recMarket">
+                  <option value="">全部市场</option>
+                  <option value="TH">🇹🇭 泰国</option>
+                  <option value="VN">🇻🇳 越南</option>
+                  <option value="MY">🇲🇾 马来西亚</option>
+                  <option value="PH">🇵🇭 菲律宾</option>
+                  <option value="ID">🇮🇩 印尼</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>启动预算 (¥)</label>
+                <input type="number" id="recBudget" placeholder="如: 5000" value="10000">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg">
+              🚀 生成AI推荐报告
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 推荐结果 -->
+      <div id="recommendResults" class="recommend-results" style="display:none;">
+        <div class="card">
+          <div class="card-header">
+            <h3>✨ AI推荐结果</h3>
+            <span class="badge" id="recommendTime"></span>
+          </div>
+          <div class="card-body">
+            <div class="recommend-list" id="recommendList">
+              <!-- 动态填充 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 市场分析 ==================== -->
+    <section id="analysis" class="section">
+      <div class="section-header">
+        <h2>📈 市场分析</h2>
+        <p>深入了解东南亚各市场的品类趋势与机会</p>
+      </div>
+
+      <!-- 品类热度排行 -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🏆 品类热度排行</h3>
+        </div>
+        <div class="card-body">
+          <div class="ranking-list" id="categoryRanking">
+            <!-- 动态填充 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 各市场详情 -->
+      <div class="market-details" id="marketDetails">
+        <!-- 动态填充 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- 添加商品弹窗 -->
+  <div class="modal" id="addProductModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>添加新商品</h3>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <form id="addProductForm">
+        <div class="form-group">
+          <label>商品名称 *</label>
+          <input type="text" id="pName" required placeholder="如: 便携式筋膜枪">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>品类</label>
+            <select id="pCategory">
+              <option value="美妆护肤">美妆护肤</option>
+              <option value="3C数码">3C数码</option>
+              <option value="时尚服饰">时尚服饰</option>
+              <option value="家居生活">家居生活</option>
+              <option value="运动户外">运动户外</option>
+              <option value="母婴用品">母婴用品</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>目标市场</label>
+            <select id="pMarket">
+              <option value="TH">🇹🇭 泰国</option>
+              <option value="VN">🇻🇳 越南</option>
+              <option value="MY">🇲🇾 马来西亚</option>
+              <option value="PH">🇵🇭 菲律宾</option>
+              <option value="ID">🇮🇩 印尼</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>售价 (¥)</label>
+            <input type="number" id="pPrice" placeholder="如: 59.9">
+          </div>
+          <div class="form-group">
+            <label>成本 (¥)</label>
+            <input type="number" id="pCost" placeholder="如: 22">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelModal">取消</button>
+          <button type="submit" class="btn btn-primary">保存商品</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast 通知 -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

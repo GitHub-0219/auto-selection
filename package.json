@@ -1,0 +1,16 @@
+{
+  "name": "auto-selection",
+  "version": "1.0.0",
+  "description": "Auto选品 - AI跨境新手加速器，聚焦TikTok Shop东南亚市场",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "keywords": ["tiktok-shop", "cross-border", "ai", "selection", "southeast-asia"],
+  "author": "Auto选品团队",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
