@@ -45,11 +45,9 @@ Auto选品是一个面向跨境电商新手的**一站式加速平台**，利用
 
 ## 📸 效果预览
 
-> 截图占位 — 欢迎贡献实际使用截图
-
 | 选品分析 | 数据看板 |
 |:---:|:---:|
-| ![选品分析](./screenshots/selection.png) | ![数据看板](./screenshots/dashboard.png) |
+| ![选品分析](./imgs/260409_20_生图/03_ai_assistant.jpg) | ![数据看板](./imgs/260409_20_生图/01_homepage.jpg) |
 
 ## ✨ 功能特性
 
@@ -142,22 +140,29 @@ pm2 save
 
 ```
 auto-selection/
-├── src/
-│   ├── index.js           # 🚪 入口文件
-│   ├── config/            # ⚙️ 配置文件
-│   ├── routes/            # 🔀 API 路由
-│   ├── models/            # 📦 数据模型
-│   ├── services/          # 💼 业务逻辑
-│   │   ├── ai-selection.js    # 🤖 AI 选品服务
-│   │   ├── data-analysis.js   # 📊 数据分析服务
-│   │   └── product-crawler.js # 🕷️ 商品采集服务
-│   └── utils/             # 🔧 工具函数
-├── frontend/
-│   ├── index.html         # 🏠 前端首页
-│   ├── css/style.css      # 🎨 样式
-│   └── js/app.js          # ⚡ 前端逻辑
-├── 项目文档整理/          # 📚 项目文档
+├── src/                        # 📦 后端源码（Express 服务）
+│   ├── config/                 #   ⚙️ 配置文件
+│   ├── models/                 #   📦 数据模型
+│   ├── routes/                 #   🔀 API 路由
+│   ├── services/               #   💼 业务逻辑
+│   └── utils/                  #   🔧 工具函数
+├── frontend/                   # 🎨 前端页面（纯静态）
+│   ├── index.html              #   🏠 前端首页
+│   ├── css/style.css           #   🎨 样式
+│   └── js/app.js               #   ⚡ 前端逻辑
+├── project/                    # 🚀 完整项目（Next.js + NestJS）
+│   ├── frontend/               #   Next.js 前端应用
+│   ├── backend/                #   NestJS 后端服务
+│   ├── docs/                   #   项目文档
+│   └── Auto选品/               #   项目资料与报告
+├── Auto选品项目/               # 📚 项目文档与报告
+├── 项目文档/                   # 📝 补充文档
+├── 公司管理/                   # 🏢 公司管理相关
+├── 内容创作/                   # ✍️ 内容创作相关
+├── 用户上传/                   # 📤 用户上传内容
+├── imgs/                       # 🖼️ 项目截图与素材
 ├── package.json
+├── deploy.sh                   # 🚀 部署脚本
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -174,8 +179,6 @@ auto-selection/
 | 🇮🇩 印尼 | 2.7 亿 | 15% | 最大市场，机会最多 |
 
 ## 📚 API 文档
-
-> API 文档占位 — 完整文档将在后续版本中提供
 
 | 接口 | 方法 | 说明 |
 |------|:---:|------|
