@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core'
 import { ValidationPipe } from '@nestjs/common'
 import { AppModule } from './app.module'
 import { NestExpressApplication } from '@nestjs/platform-express'
+// 安全模块
+import { SecurityModule } from './security/security.module'
 
 // [BUG-008 FIX] 根据环境配置日志级别
 const isProduction = process.env.NODE_ENV === 'production'

@@ -14,6 +14,7 @@ import { CaptchaModule } from './modules/captcha/captcha.module'
 import { PaymentModule } from './modules/payment/payment.module'
 import { InviteModule } from './modules/invite/invite.module'
 import { PointsModule } from './modules/points/points.module'
+import { SecurityModule } from './security/security.module'
 
 import { PrismaModule } from './common/prisma/prisma.module'
 import { AppController } from './app.controller'
@@ -57,6 +58,7 @@ import { AppController } from './app.controller'
     PaymentModule,
     InviteModule,
     PointsModule,
+    SecurityModule,
   ],
   controllers: [AppController],
   providers: [
